@@ -38,7 +38,7 @@ function DashboardPage() {
           <p className="description">
             This application helps you predict your academic performance based
             on your current assessments and study patterns. You can also keep
-            track of your past predictions and analyze how well you're doing
+            track of your past predictions and analyze how well you&apos;re doing
             over time.
           </p>
           <p className="features">
