@@ -44,7 +44,7 @@ function DashboardPage() {
           <p className="features">
             🔍 Analyze grades <br />
             📊 Track academic performance <br />
-            💾 View history & trends
+            💾 View history &amp; trends
           </p>
           <a href="/predict" className="predictButton">
             🎯 Predict Grade

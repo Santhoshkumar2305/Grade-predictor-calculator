@@ -51,7 +51,7 @@ function AuthForm({ type, onSubmit, message, messageType, isLoading }) {
       <p className="linkText">
         {type === 'login' ? (
           <>
-            Don't have an account? <a href="/register">Register here</a>
+            Don&apos;t have an account? <a href="/register">Register here</a>
           </>
         ) : (
           <>
