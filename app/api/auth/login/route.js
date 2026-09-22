@@ -5,14 +5,18 @@ import User from '../../../../models/User';
 import { signToken } from '../../../../utils/jwt';
 
 export async function POST(request) {
-  await dbConnect();
-
   try {
-    const { email, password } = await request.json();
+    await dbConnect();
+
+    const body = await request.json();
+    const { email, password } = body;
+
     if (!email || !password) {
       return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
     }
-    const user = await User.findOne({ email });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
@@ -20,10 +24,20 @@ export async function POST(request) {
     if (!isMatch) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
-    const token = signToken({ userId: user._id });
-    return NextResponse.json({ message: 'Login successful', token }, { status: 200 });
+    const token = signToken({ userId: user._id, email: user.email });
+    return NextResponse.json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+      },
+    }, { status: 200 });
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    if (error.name === 'MongooseServerSelectionError' || error.name === 'MongoNetworkError') {
+      return NextResponse.json({ message: 'Database connection failed. Please ensure your IP address is whitelisted in MongoDB Atlas or check connection settings.' }, { status: 503 });
+    }
+    return NextResponse.json({ message: error.message || 'Internal server error' }, { status: 500 });
   }
 }

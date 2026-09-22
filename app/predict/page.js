@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import PredictionForm from '../../components/PredictionForm';
-import { getAuthToken } from '../../lib/auth';
-import '../../styles/globals.css';
+import { getAuthToken, removeAuthToken } from '../../lib/auth';
 
 function PredictPage() {
   const router = useRouter();
@@ -30,7 +29,7 @@ function PredictPage() {
     }, 5000);
   };
 
-  const handleSavePrediction = async (assessments, predictedGrade, msg, type) => {
+  const handleSavePrediction = async (payloadOrAssessments, predictedGradeArg, msg, type) => {
     if (msg) {
       setMessage(msg);
       setMessageType(type);
@@ -43,11 +42,22 @@ function PredictPage() {
 
     const token = getAuthToken();
     if (!token) {
-      setMessage('You are not logged in. Please log in to save predictions.');
+      setMessage('You are not logged in. Please log in to save simulations.');
       setMessageType('error');
       setIsLoading(false);
       router.push('/login');
       return;
+    }
+
+    // Support both new structured object and legacy arguments
+    let bodyPayload;
+    if (payloadOrAssessments && typeof payloadOrAssessments === 'object' && !Array.isArray(payloadOrAssessments)) {
+      bodyPayload = payloadOrAssessments;
+    } else {
+      bodyPayload = {
+        assessments: payloadOrAssessments,
+        predictedGrade: predictedGradeArg,
+      };
     }
 
     try {
@@ -57,21 +67,28 @@ function PredictPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ assessments, predictedGrade }),
+        body: JSON.stringify(bodyPayload),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message || 'Prediction saved successfully!');
+        setMessage(data.message || 'Calculation saved successfully to your audit history!');
         setMessageType('success');
+      } else if (response.status === 401) {
+        removeAuthToken();
+        setMessage('Your session has expired. Redirecting to login...');
+        setMessageType('error');
+        setTimeout(() => {
+          router.replace('/login');
+        }, 1500);
       } else {
-        setMessage(data.message || 'Failed to save prediction.');
+        setMessage(data.message || 'Failed to save calculation.');
         setMessageType('error');
       }
     } catch (error) {
-      console.error('Error saving prediction:', error);
-      setMessage('An unexpected error occurred while saving.');
+      console.error('Error saving calculation:', error);
+      setMessage('An unexpected network error occurred while saving.');
       setMessageType('error');
     } finally {
       setIsLoading(false);
@@ -85,7 +102,7 @@ function PredictPage() {
   if (!isClient) {
     return (
       <div className="container" style={{ textAlign: 'center', padding: '50px' }}>
-        <h1>Loading Prediction Page...</h1>
+        <h2 style={{ color: 'var(--text-secondary)' }}>Loading Academic Calculator...</h2>
       </div>
     );
   }
@@ -93,7 +110,7 @@ function PredictPage() {
   return (
     <>
       <Navbar />
-      <div className="container predictContainer">
+      <main className="container">
         <PredictionForm
           onPredict={handlePredictResult}
           onSave={handleSavePrediction}
@@ -101,8 +118,9 @@ function PredictPage() {
           messageType={messageType}
           isLoading={isLoading}
         />
-      </div>
+      </main>
     </>
   );
 }
+
 export default PredictPage;

@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthForm from '../../components/AuthForm';
-import '../../styles/globals.css';
 
 function RegisterPage() {
   const router = useRouter();

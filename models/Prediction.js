@@ -30,12 +30,27 @@ const PredictionSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  courseName: {
+    type: String,
+    default: 'General Coursework',
+    trim: true,
+  },
+  semester: {
+    type: String,
+    default: 'Current Semester',
+    trim: true,
+  },
+  mode: {
+    type: String,
+    enum: ['weighted', 'target_planner'],
+    default: 'weighted',
+  },
   assessments: {
     type: [AssessmentItemSchema],
     required: true,
     validate: {
       validator: function(v) {
-        return v.length > 0;
+        return Array.isArray(v) && v.length > 0;
       },
       message: 'At least one assessment is required for a prediction',
     },
@@ -45,6 +60,26 @@ const PredictionSchema = new mongoose.Schema({
     required: true,
     min: [0, 'Predicted grade cannot be negative'],
     max: [100, 'Predicted grade cannot exceed 100'],
+  },
+  targetGrade: {
+    type: Number,
+    default: null,
+  },
+  requiredFinalScore: {
+    type: Number,
+    default: null,
+  },
+  letterGrade: {
+    type: String,
+    default: 'N/A',
+  },
+  cgpa10: {
+    type: Number,
+    default: 0,
+  },
+  gpaScale4: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,

@@ -2,7 +2,7 @@ import { verifyToken } from "./jwt";
 import { NextResponse } from "next/server";
 
 export function authMiddleware(handler) {
-  return async (req, ...args) => {
+  return async (req, context) => {
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
@@ -21,6 +21,6 @@ export function authMiddleware(handler) {
     }
     req.userId = decoded.userId;
 
-    return handler(req, ...args, decoded.userId);
+    return handler(req, context || {}, decoded.userId);
   };
 }

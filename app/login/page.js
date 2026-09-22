@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthForm from '../../components/AuthForm';
 import { setAuthToken } from '../../lib/auth';
-import '../../styles/globals.css';
 
 function LoginPage() {
   const router = useRouter();
@@ -28,7 +27,7 @@ function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setAuthToken(data.token);
+        setAuthToken(data.token, data.user?.email || email);
         setMessage(data.message || 'Login successful! Redirecting to dashboard...');
         setMessageType('success');
         setTimeout(() => {
