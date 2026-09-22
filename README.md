@@ -81,22 +81,6 @@ GradeTrack is a modern, full-stack academic management and performance forecasti
 
 ---
 
-## 📐 Mathematical Formulation
-
-### 1. Weighted Course Grade
-$$\text{Final Grade} (\%) = \frac{\sum_{i=1}^{n} \left(\frac{\text{Score}_i}{\text{Max Score}_i} \times \text{Weightage}_i\right)}{\sum_{i=1}^{n} \text{Weightage}_i} \times 100$$
-
-### 2. Final Exam Target Score Reverse Solver
-$$\text{Score Required on Final} (\%) = \frac{\left(\text{Target Grade} \times \frac{\text{Total Weight}}{100}\right) - \text{Current Earned Weighted Points}}{\text{Remaining Weight}} \times 100$$
-
-### 3. Maximum Possible Grade
-$$\text{Max Possible Grade} (\%) = \frac{\text{Current Earned Points} + (1.0 \times \text{Remaining Weight})}{\text{Total Course Weight}} \times 100$$
-
-### 4. 10.0 Scale CGPA Conversion
-$$\text{CGPA (10.0 Scale)} = \frac{\text{Percentage}}{10}$$
-
----
-
 ## 🏆 Collegiate Academic Grading Matrix (10.0 Scale)
 
 | Score Band | Letter Grade | CGPA (10.0 Scale) | Academic Classification | Color Code |
@@ -243,8 +227,3 @@ To build and start the production-optimized Next.js bundle:
 npm run build
 npm run start
 ```
-
----
-
-## 📄 License & Attribution
-Developed by **Santhosh Kumar** as an advanced full-stack academic planning and performance prediction system. Open source and available for educational use.
